@@ -99,6 +99,115 @@ Install:
 
 ## 1. Clone the Repository
 
+Open a terminal and clone the repository:
+
 ```bash
 git clone https://github.com/furkan-luleci/edubeam-ai.git
 cd edubeam-ai
+```
+
+## 2. Install Dependencies
+
+Install the required Node.js packages:
+
+```bash
+npm install
+```
+
+This only needs to be done the first time you install EduBeam AI, or whenever the project dependencies change.
+
+## 3. Configure the Gemini API Key
+
+The Gemini API key is required only if you want to use the **AI Model Builder**.
+
+A template environment file is provided at:
+
+```text
+server/.env.example
+```
+
+Create a copy named:
+
+```text
+server/.env
+```
+
+### Windows PowerShell
+
+```powershell
+Copy-Item server\.env.example server\.env
+```
+
+### macOS or Linux
+
+```bash
+cp server/.env.example server/.env
+```
+
+Open `server/.env` and replace:
+
+```text
+GEMINI_API_KEY=PASTE_YOUR_GEMINI_API_KEY_HERE
+```
+
+with your Gemini API key:
+
+```text
+GEMINI_API_KEY=your_api_key_here
+```
+
+> **Important:** Do not share or commit your API key. The `server/.env` file is excluded from Git tracking.
+
+## 4. Run EduBeam AI
+
+To start both the EduBeam application and the AI server, run:
+
+```bash
+npm run dev:ai
+```
+
+This starts:
+
+* EduBeam AI frontend: `http://localhost:3000`
+* AI server: `http://localhost:3001`
+
+Open the following address in your web browser:
+
+```text
+http://localhost:3000
+```
+
+EduBeam AI is now ready to use.
+
+## 5. Run Without the AI Model Builder
+
+If you only want to use EduBeam without the Gemini-powered AI Model Builder, run:
+
+```bash
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+A Gemini API key is not required when running EduBeam without the AI Model Builder.
+
+## Starting EduBeam AI Again Later
+
+After the initial installation, you do not need to run `npm install` every time.
+
+Open a terminal, navigate to the repository, and run:
+
+```bash
+cd edubeam-ai
+npm run dev:ai
+```
+
+To stop the application, press:
+
+```text
+Ctrl+C
+```
