@@ -24,6 +24,7 @@ import Welcome from '@/components/dialogs/Welcome.vue';
 import Share from '@/components/dialogs/Share.vue';
 import Changelog from '@/components/dialogs/Changelog.vue';
 import AIModelBuilder from '@/components/dialogs/AIModelBuilder.vue';
+import EquationPanel from '@/components/EquationPanel.vue';
 import Editor from '@/views/Editor.vue';
 import Dialogs from '@/components/Dialogs.vue';
 import { useProjectStore } from './store/project';
@@ -470,6 +471,7 @@ const app_commit = APP_COMMIT;
     </v-main>
 
     <Dialogs />
+    <EquationPanel />
 
     <widget-container-modal />
 

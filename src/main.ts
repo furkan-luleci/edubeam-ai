@@ -1,7 +1,6 @@
 // Components
 import App from './App.vue';
 
-import EquationPanel from './components/EquationPanel.vue';
 
 // Composables
 import { createApp } from 'vue';
@@ -63,10 +62,3 @@ if (import.meta.env.PROD) {
 registerPlugins(app);
 
 app.mount('#app');
-
-const equationPanelRoot = document.createElement('div');
-document.body.appendChild(equationPanelRoot);
-
-const equationPanelApp = createApp(EquationPanel);
-registerPlugins(equationPanelApp);
-equationPanelApp.mount(equationPanelRoot);
