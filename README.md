@@ -73,3 +73,30 @@ Install:
 ```bash
 git clone https://github.com/furkan-luleci/edubeam-ai.git
 cd edubeam-ai
+
+
+## Example Workflow
+
+The AI Model Builder can interpret a structural-analysis problem from an image, review the extracted structural information, and construct the corresponding model in EduBeam AI.
+
+### 1. Original Structural Problem
+
+![Original structural problem](docs/screenshots/image4.png)
+
+### 2. Upload or Paste the Problem into AI Build
+
+Users can upload, drag-and-drop, or paste a structural diagram directly into the AI Model Builder.
+
+![AI Model Builder](docs/screenshots/image1.png)
+
+### 3. Review the Gemini Interpretation
+
+Before building the model, EduBeam AI displays the interpreted structure, units, loads, supports, properties, and any uncertainties for review.
+
+![Gemini structural interpretation](docs/screenshots/image2.png)
+
+### 4. Build, Solve, and Review Structural Equations
+
+The interpreted model is constructed in EduBeam, where users can solve the structure and inspect analysis results. The Show Equations tool can also display member-level shear-force and bending-moment equations.
+
+![Generated EduBeam model with shear and moment equations](docs/screenshots/image3.png)
