@@ -57,23 +57,6 @@ Before solving an AI-generated model, verify:
 
 A finite-element model can solve successfully even when the source structural diagram was interpreted incorrectly.
 
-# Installation
-
-## Requirements
-
-Install:
-
-- Git
-- Node.js 20 or newer
-- npm
-- A Gemini API key if you want to use the AI Model Builder
-
-## 1. Clone the Repository
-
-```bash
-git clone https://github.com/furkan-luleci/edubeam-ai.git
-cd edubeam-ai
-
 
 ## Example Workflow
 
@@ -100,3 +83,22 @@ Before building the model, EduBeam AI displays the interpreted structure, units,
 The interpreted model is constructed in EduBeam, where users can solve the structure and inspect analysis results. The Show Equations tool can also display member-level shear-force and bending-moment equations.
 
 ![Generated EduBeam model with shear and moment equations](docs/screenshots/image3.png)
+
+
+
+# Installation
+
+## Requirements
+
+Install:
+
+- Git
+- Node.js 20 or newer
+- npm
+- A Gemini API key if you want to use the AI Model Builder
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/furkan-luleci/edubeam-ai.git
+cd edubeam-ai
