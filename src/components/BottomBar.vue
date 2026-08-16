@@ -136,7 +136,11 @@
                 <label :for="`coords2-${item.label}`" class="input-before">z</label>
                 <input
                   :id="`coords2-${item.label}`"
-                  :value="float2String(appStore.convertLength(item.coords[2]))"
+                  :value="float2String(
+        appStore.convertLength(
+          eduBeamZToEngineering(item.coords[2])
+        )
+      )"
                   class="inline-edit"
                   style="width: 60px"
                   @keydown="checkNumber($event)"
@@ -146,7 +150,10 @@
                       'coords',
                       2,
                       $event.target as HTMLInputElement,
-                      appStore.convertInverseLength
+                      (v) =>
+                        engineeringZToEduBeam(
+                          appStore.convertInverseLength(v)
+                        )
                     )
                   "
                 />
@@ -591,7 +598,13 @@
               <div class="inline-edit-group load mr-2">
                 <span class="input-before">F<sub>z</sub></span>
                 <input
-                  :value="appStore.convertForce(item.ref.values[2])"
+                  :value="
+        appStore.convertForce(
+          eduBeamFzToEngineering(
+            item.ref.values[2]
+          )
+        )
+      "
                   class="inline-edit"
                   @keydown="checkNumber($event)"
                   @change="
@@ -600,7 +613,10 @@
                       'values',
                       2,
                       $event.target as HTMLInputElement,
-                      appStore.convertInverseForce
+                      (v) =>
+                        engineeringFzToEduBeam(
+                          appStore.convertInverseForce(v)
+                        )
                     )
                   "
                 />
@@ -642,11 +658,21 @@
               <div class="inline-edit-group load mr-2" style="width: 128px">
                 <span class="input-before">D<sub>z</sub></span>
                 <input
-                  :value="item.ref.prescribedValues[2]"
+                  :value="
+        eduBeamZToEngineering(
+          item.ref.prescribedValues[2]
+        )
+      "
                   class="inline-edit"
                   @keydown="checkNumber($event)"
                   @change="
-                    changeSetArrayItem(item.ref, 'prescribedValues', 2, $event.target as HTMLInputElement, (v) => v)
+                    changeSetArrayItem(
+                      item.ref,
+                      'prescribedValues',
+                      2,
+                      $event.target as HTMLInputElement,
+                      (v) => engineeringZToEduBeam(v)
+                    )
                   "
                 />
                 <div class="input-after" v-html="formatMeasureAsHTML(appStore.units.Length)"></div>
@@ -672,7 +698,7 @@
                 <div class="inline-edit-group load mr-2">
                   <span class="input-before" v-html="'f<sub>x1</sub>'"></span>
                   <input
-                    :value="appStore.convertForce(item.ref.startValues[0])"
+                    :value="appStore.convertForceDistance(item.ref.startValues[0])"
                     class="inline-edit"
                     style="width: 60px"
                     @keydown="checkNumber($event)"
@@ -682,7 +708,7 @@
                         'startValues',
                         0,
                         $event.target as HTMLInputElement,
-                        appStore.convertInverseForce
+                        appStore.convertInverseForceDistance
                       )
                     "
                   />
@@ -691,7 +717,7 @@
                 <div class="inline-edit-group load mr-2">
                   <span class="input-before" v-html="'f<sub>x2</sub>'"></span>
                   <input
-                    :value="appStore.convertForce(item.ref.endValues[0])"
+                    :value="appStore.convertForceDistance(item.ref.endValues[0])"
                     class="inline-edit"
                     style="width: 60px"
                     @keydown="checkNumber($event)"
@@ -701,7 +727,7 @@
                         'endValues',
                         0,
                         $event.target as HTMLInputElement,
-                        appStore.convertInverseForce
+                        appStore.convertInverseForceDistance
                       )
                     "
                   />
@@ -710,7 +736,10 @@
                 <div class="inline-edit-group load mr-2">
                   <span class="input-before" v-html="'f<sub>z1</sub>'"></span>
                   <input
-                    :value="appStore.convertForce(item.ref.startValues[1])"
+                    :value="elementFzForDisplay(
+        item.ref.startValues[1],
+        item.ref.lcs
+      )"
                     class="inline-edit"
                     style="width: 60px"
                     @keydown="checkNumber($event)"
@@ -720,7 +749,7 @@
                         'startValues',
                         1,
                         $event.target as HTMLInputElement,
-                        appStore.convertInverseForce
+                        appStore.convertInverseForceDistance
                       )
                     "
                   />
@@ -729,7 +758,10 @@
                 <div class="inline-edit-group load mr-2">
                   <span class="input-before" v-html="'f<sub>z2</sub>'"></span>
                   <input
-                    :value="appStore.convertForce(item.ref.endValues[1])"
+                    :value="elementFzForDisplay(
+        item.ref.endValues[1],
+        item.ref.lcs
+      )"
                     class="inline-edit"
                     style="width: 60px"
                     @keydown="checkNumber($event)"
@@ -739,7 +771,7 @@
                         'endValues',
                         1,
                         $event.target as HTMLInputElement,
-                        appStore.convertInverseForce
+                        appStore.convertInverseForceDistance
                       )
                     "
                   />
@@ -803,7 +835,10 @@
                   <input
                     :value="
                       loadType(item.ref) !== 'temperature'
-                        ? appStore.convertForce(item.ref.values[1])
+                        ? elementFzForDisplay(
+                              item.ref.values[1],
+                              item.ref.lcs
+                            )
                         : appStore.convertTemperature(item.ref.values[1])
                     "
                     class="inline-edit"
@@ -1306,7 +1341,16 @@
                       class="inline-edit fw pl-1"
                       v-html="
                         formatExpValueAsHTML(
-                          appStore.convertLength(item.getUnknowns(useProjectStore().solver.loadCases[0], [DofID.Dz])),
+                          appStore.convertLength(
+                            eduBeamZToEngineering(
+                              Number(
+                                item.getUnknowns(
+                                  useProjectStore().solver.loadCases[0],
+                                  [DofID.Dz]
+                                )
+                              )
+                            )
+                          ),
                           4
                         )
                       "
@@ -1475,11 +1519,40 @@ import EditNode from './dialogs/EditNode.vue';
 import { useLayoutStore } from '@/store/layout';
 import StiffnessMatrix from '@/components/StiffnessMatrix.vue';
 import { float2String } from '../utils/index';
+import {
+  engineeringZToEduBeam,
+  eduBeamZToEngineering,
+  engineeringFzToEduBeam,
+  eduBeamFzToEngineering,
+  engineeringElementFzToEduBeam,
+  eduBeamElementFzToEngineering
+} from '@/utils/engineeringCoordinates';
 
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const appStore = useAppStore();
+
+const elementFzForDisplay = (
+  value: number,
+  lcs: boolean
+) =>
+  appStore.convertForce(
+    eduBeamElementFzToEngineering(
+      value,
+      lcs
+    )
+  );
+
+const elementFzFromInput = (
+  value: number,
+  lcs: boolean
+) =>
+  engineeringElementFzToEduBeam(
+    appStore.convertInverseForce(value),
+    lcs
+  );
+
 const projStore = useProjectStore();
 const layoutStore = useLayoutStore();
 
@@ -1645,7 +1718,11 @@ const formatNodalLoadsAtNode = (item: Node): [number, string][] => {
     if (DofID.Dx in nl.components && Math.abs(nl.components[DofID.Dx]) > 1e-12)
       tmp.push('F<sub>x</sub> = ' + appStore.convertForce(nl.components[DofID.Dx]));
     if (DofID.Dz in nl.components && Math.abs(nl.components[DofID.Dz]) > 1e-12)
-      tmp.push('F<sub>z</sub> = ' + appStore.convertForce(nl.components[DofID.Dz]));
+      tmp.push('F<sub>z</sub> = ' + appStore.convertForce(
+        eduBeamFzToEngineering(
+          nl.components[DofID.Dz]
+        )
+      ));
     if (DofID.Ry in nl.components && Math.abs(nl.components[DofID.Ry]) > 1e-12)
       tmp.push('M<sub>y</sub> = ' + appStore.convertMoment(nl.components[DofID.Ry]));
     return [nl.index, tmp.join(', ')];
@@ -1684,15 +1761,24 @@ const formatElementLoadsAtElement = (item: Beam2D): [number, string][] => {
         tmp.push(`${ff}<sub>x</sub> = ${startText} → ${endText}`);
       }
       if (Math.abs(startFz) > 1e-12 || Math.abs(endFz) > 1e-12) {
-        const startText = appStore.convertForce(startFz);
-        const endText = appStore.convertForce(endFz);
+        const startText = elementFzForDisplay(
+        startFz,
+        nl.ref.lcs
+      );
+        const endText = elementFzForDisplay(
+        endFz,
+        nl.ref.lcs
+      );
         tmp.push(`${ff}<sub>z</sub> = ${startText} → ${endText}`);
       }
     } else if ('values' in nl.ref) {
       if (Math.abs(nl.ref.values[0]) > 1e-12)
         tmp.push(ff + '<sub>x</sub> = ' + appStore.convertForce(nl.ref.values[0]));
       if (Math.abs(nl.ref.values[1]) > 1e-12)
-        tmp.push(ff + '<sub>z</sub> = ' + appStore.convertForce(nl.ref.values[1]));
+        tmp.push(ff + '<sub>z</sub> = ' + elementFzForDisplay(
+        nl.ref.values[1],
+        'lcs' in nl.ref ? nl.ref.lcs : true
+      ));
     }
     return [nl.index, tmp.join(', ')];
   });

@@ -112,6 +112,7 @@
               { name: 'kN', code: 'kN' },
               { name: 'MN', code: 'MN' },
               { name: 'lbf', code: 'lbf' },
+  { name: 'kip', code: 'kip' },
               { name: 'Tonf', code: 'Tonf' },
               { name: 'kgf', code: 'kgf' },
             ]"
@@ -133,7 +134,9 @@
               { name: 'MNm', code: 'MN_m' },
               { name: 'Tonf·m', code: 'Tonf_m' },
               { name: 'lbf·in', code: 'lbf_in' },
+  { name: 'kip·in', code: 'kip_in' },
               { name: 'lbf·ft', code: 'lbf_ft' },
+  { name: 'kip·ft', code: 'kip_ft' },
             ]"
             :label="$t('settings.units.moment')"
           >
@@ -152,12 +155,28 @@
               { name: 'MPa', code: 'MPa' },
               { name: 'GPa', code: 'GPa' },
               { name: 'psi', code: 'psi' },
+  { name: 'ksi', code: 'ksi' },
               { name: 'ksc', code: 'ksc' },
             ]"
             :label="$t('settings.units.pressure')"
           >
           </v-select
         ></v-col>
+
+        <v-col cols="6">
+          <v-select
+            v-model="appStore.units.Temperature"
+            item-title="name"
+            item-value="code"
+            hide-details="auto"
+            :items="[
+              { name: '°C', code: 'C' },
+              { name: '°F', code: 'F' },
+            ]"
+            label="Temperature change"
+          >
+          </v-select>
+        </v-col>
       </v-row>
     </div>
   </div>

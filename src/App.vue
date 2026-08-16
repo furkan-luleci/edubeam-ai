@@ -23,6 +23,7 @@ import { setLocale, availableLocales } from './plugins/i18n';
 import Welcome from '@/components/dialogs/Welcome.vue';
 import Share from '@/components/dialogs/Share.vue';
 import Changelog from '@/components/dialogs/Changelog.vue';
+import AIModelBuilder from '@/components/dialogs/AIModelBuilder.vue';
 import Editor from '@/views/Editor.vue';
 import Dialogs from '@/components/Dialogs.vue';
 import { useProjectStore } from './store/project';
@@ -385,6 +386,13 @@ const app_commit = APP_COMMIT;
 
       <v-btn class="d-none d-sm-inline-flex" @click="shareMesh">
         <v-icon>mdi-share</v-icon> {{ $t('common.shareModel') }}
+      </v-btn>
+      <v-btn
+        class="d-none d-sm-inline-flex"
+        @click="openModal(AIModelBuilder)"
+      >
+        <v-icon class="mr-1">mdi-creation</v-icon>
+        AI Build
       </v-btn>
 
       <v-spacer></v-spacer>

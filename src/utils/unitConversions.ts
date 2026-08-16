@@ -7,6 +7,7 @@ import Qty from 'js-quantities';
 export const customForceConversion = (fromUnit: string, toUnit: string) => {
   const conversionFactors = {
     N: 1,
+    kip: 4448.2216152605,
     kgf: 9.80665,
     Tonf: 9806.65,
   };
@@ -35,6 +36,7 @@ export const customPressureConversion = (fromUnit: string, toUnit: string) => {
     MPa: 1000000,
     GPa: 1000000000,
     psi: 6894.757,
+    ksi: 6894757.293168,
     ksc: 98066.5, // kg/cm²
   };
 

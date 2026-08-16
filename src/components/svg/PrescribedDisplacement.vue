@@ -2,6 +2,9 @@
 import { formatScientificNumber } from '@/utils/index';
 import { PrescribedDisplacement } from 'ts-fem';
 import { computed } from 'vue';
+import {
+  eduBeamZToEngineering
+} from '@/utils/engineeringCoordinates';
 
 const props = withDefaults(
   defineProps<{
@@ -49,7 +52,14 @@ const target = computed(() => {
               ${target.coords[2] + (nload.prescribedValues[2] * props.multiplier) / scale})`"
     >
       {{ formatScientificNumber(convertLength(nload.prescribedValues[0]), 2) }};
-      {{ formatScientificNumber(convertLength(nload.prescribedValues[2]), 2) }};
+      {{ formatScientificNumber(
+        convertLength(
+          eduBeamZToEngineering(
+            nload.prescribedValues[2]
+          )
+        ),
+        2
+      ) }};
       {{ formatScientificNumber(convertLength(nload.prescribedValues[4]), 2) }}
     </text>
   </g>

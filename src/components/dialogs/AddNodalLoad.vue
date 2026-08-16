@@ -105,6 +105,10 @@ import { closeModal } from 'jenesius-vue-modal';
 import { useAppStore } from '@/store/app';
 import { checkNumber, executeModelMutationWithUndo, parseFloat2, numberRules } from '@/utils';
 import Vector2DHelper from '../Vector2DHelper.vue';
+import {
+  engineeringFzToEduBeam,
+  engineeringZToEduBeam
+} from '@/utils/engineeringCoordinates';
 
 const projectStore = useProjectStore();
 const appStore = useAppStore();
@@ -142,11 +146,23 @@ const mainUnits = computed(() => (loadType.value === 'force' ? appStore.units.Fo
 const momentUnits = computed(() => (loadType.value === 'force' ? appStore.units.Moment : 'rad'));
 
 const realFx = computed(() => appStore.convertInverseForce(parseFloat2(loadNodeValueFx.value)));
-const realFz = computed(() => appStore.convertInverseForce(parseFloat2(loadNodeValueFz.value)));
+const realFz = computed(() =>
+  engineeringFzToEduBeam(
+    appStore.convertInverseForce(
+      parseFloat2(loadNodeValueFz.value)
+    )
+  )
+);
 const realMy = computed(() => appStore.convertInverseMoment(parseFloat2(loadNodeValueMy.value)));
 
 const realDx = computed(() => appStore.convertInverseLength(parseFloat2(loadNodeValueFx.value)));
-const realDz = computed(() => appStore.convertInverseLength(parseFloat2(loadNodeValueFz.value)));
+const realDz = computed(() =>
+  engineeringZToEduBeam(
+    appStore.convertInverseLength(
+      parseFloat2(loadNodeValueFz.value)
+    )
+  )
+);
 const realRy = computed(() => parseFloat2(loadNodeValueMy.value));
 
 onMounted(() => {

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { NodalLoad } from 'ts-fem';
 import { computed } from 'vue';
+import {
+  eduBeamFzToEngineering
+} from '@/utils/engineeringCoordinates';
 
 const props = withDefaults(
   defineProps<{
@@ -138,7 +141,13 @@ const stackedTransform = computed(() => {
       }}
       <template v-if="nload.values[0] !== 0 && nload.values[2] !== 0">
         ({{ numberFormat.format(convertForce(nload.values[0])) }};
-        {{ numberFormat.format(convertForce(nload.values[2])) }})
+        {{ numberFormat.format(
+          convertForce(
+            eduBeamFzToEngineering(
+              nload.values[2]
+            )
+          )
+        ) }})
       </template>
     </text>
   </g>

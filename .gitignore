@@ -28,3 +28,8 @@ pnpm-debug.log*
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# EduBeam AI local/private files
+server/.env
+*.before-*
+tools/

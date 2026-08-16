@@ -122,6 +122,10 @@ import { closeModal } from 'jenesius-vue-modal';
 import { useAppStore } from '@/store/app';
 import { checkNumber, parseFloat2, setUnsolved, solve, toggleSet } from '@/utils';
 import SupportHelper from '../svg/SupportHelper.vue';
+import {
+  engineeringZToEduBeam,
+  eduBeamZToEngineering
+} from '@/utils/engineeringCoordinates';
 import { numberRules } from '../../utils';
 
 const projectStore = useProjectStore();
@@ -161,7 +165,10 @@ onMounted(() => {
   tmpNode.value = new Node(node.value.label, node.value.domain, node.value.coords, [...node.value.bcs.values()]);
 
   newNodeX.value = node.value.coords[0].toString();
-  newNodeZ.value = node.value.coords[2].toString();
+  newNodeZ.value =
+    eduBeamZToEngineering(
+      node.value.coords[2]
+    ).toString();
 });
 
 const angle = computed(() => {
@@ -191,7 +198,13 @@ const edit = () => {
     node.value.updateLcs({ locx, locy });
   }
 
-  node.value.coords = [parseFloat2(newNodeX.value), 0, parseFloat2(newNodeZ.value)];
+  node.value.coords = [
+    parseFloat2(newNodeX.value),
+    0,
+    engineeringZToEduBeam(
+      parseFloat2(newNodeZ.value)
+    )
+  ];
 
   console.log('BCS before:', node.value.bcs);
   node.value.bcs = new Set(tmpNode.value.bcs);

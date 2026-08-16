@@ -113,6 +113,7 @@ import { Node } from 'ts-fem';
 import { closeModal } from 'jenesius-vue-modal';
 import { useAppStore } from '@/store/app';
 import SupportHelper from '../svg/SupportHelper.vue';
+import { engineeringZToEduBeam } from '@/utils/engineeringCoordinates';
 import { checkNumber, changeRefNumValue, executeModelMutationWithUndo, numberRules, toggleSet } from '../../utils';
 
 const projectStore = useProjectStore();
@@ -151,7 +152,11 @@ const addNode = () => {
   }
 
   const nx = appStore.convertInverseLength(changeRefNumValue(newNodeX.value.toString()));
-  const nz = appStore.convertInverseLength(changeRefNumValue(newNodeZ.value.toString()));
+  const nz = engineeringZToEduBeam(
+    appStore.convertInverseLength(
+      changeRefNumValue(newNodeZ.value.toString())
+    )
+  );
   const ang = parseFloat(nodalAngle.value) * (Math.PI / 180);
 
   executeModelMutationWithUndo(() => {

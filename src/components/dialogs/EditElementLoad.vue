@@ -209,6 +209,10 @@ import {
 } from 'ts-fem';
 import ElementLoadPreview from '../ElementLoadPreview.vue';
 import { formatMeasureAsHTML } from '@/SVGUtils';
+import {
+  engineeringElementFzToEduBeam,
+  eduBeamElementFzToEngineering
+} from '@/utils/engineeringCoordinates';
 
 type EditableElementLoad =
   | BeamElementUniformEdgeLoad
@@ -225,6 +229,14 @@ const props = defineProps<{
 
 const open = ref(true);
 const valid = ref(false);
+
+const displayElementLoadComponent = (value: number) => {
+  if (loadType.value === 'udl') {
+    return appStore.convertForceDistance(value);
+  }
+
+  return appStore.convertForce(value);
+};
 
 const target = computed(() => {
   return useProjectStore().solver.domain.elements.get(load.value.target)!;
@@ -245,7 +257,7 @@ const unitAndLabel = computed(() => {
   let l = 'F';
 
   if (loadType.value === 'udl' || loadType.value === 'trapezoidal') {
-    u += '/m';
+    u = appStore.units.ForceDistance;
     l = 'f';
   }
 
@@ -279,16 +291,37 @@ const minMax = (v) => {
   return true;
 };
 
-const realFx = computed(() => appStore.convertInverseForce(parseFloat2(elementNodeValueFx.value)));
-const realFz = computed(() => appStore.convertInverseForce(parseFloat2(elementNodeValueFz.value)));
+const realFx = computed(() => (loadType.value === 'udl' ? appStore.convertInverseForceDistance(parseFloat2(elementNodeValueFx.value)) : appStore.convertInverseForce(parseFloat2(elementNodeValueFx.value))));
+const realFz = computed(() =>
+  engineeringElementFzToEduBeam(
+    appStore.convertInverseForce(
+      parseFloat2(elementNodeValueFz.value)
+    ),
+    elementLCS.value
+  )
+);
 const realMy = computed(() => appStore.convertInverseMoment(parseFloat2(loadNodeValueMy.value)));
-const realTrapStartFx = computed(() => appStore.convertInverseForce(parseFloat2(trapezoidStartFx.value)));
-const realTrapStartFz = computed(() => appStore.convertInverseForce(parseFloat2(trapezoidStartFz.value)));
-const realTrapEndFx = computed(() => appStore.convertInverseForce(parseFloat2(trapezoidEndFx.value)));
-const realTrapEndFz = computed(() => appStore.convertInverseForce(parseFloat2(trapezoidEndFz.value)));
+const realTrapStartFx = computed(() => appStore.convertInverseForceDistance(parseFloat2(trapezoidStartFx.value)));
+const realTrapStartFz = computed(() =>
+  engineeringElementFzToEduBeam(
+    appStore.convertInverseForce(
+      parseFloat2(trapezoidStartFz.value)
+    ),
+    elementLCS.value
+  )
+);
+const realTrapEndFx = computed(() => appStore.convertInverseForceDistance(parseFloat2(trapezoidEndFx.value)));
+const realTrapEndFz = computed(() =>
+  engineeringElementFzToEduBeam(
+    appStore.convertInverseForce(
+      parseFloat2(trapezoidEndFz.value)
+    ),
+    elementLCS.value
+  )
+);
 const realDist = computed(() => appStore.convertInverseLength(parseFloat2(elementLoadPos.value)));
-const realTc = computed(() => appStore.convertInverseTemperature(parseFloat2(loadNodeValueTc.value)));
-const realTbt = computed(() => appStore.convertInverseTemperature(parseFloat2(loadNodeValueTbt.value)));
+const realTc = computed(() => appStore.convertInverseTemperatureDifference(parseFloat2(loadNodeValueTc.value)));
+const realTbt = computed(() => appStore.convertInverseTemperatureDifference(parseFloat2(loadNodeValueTbt.value)));
 
 const previewLoad = computed(() => {
   const domain = projectStore.solver.domain;
@@ -325,8 +358,15 @@ const previewLoad = computed(() => {
 
 onMounted(() => {
   if (load.value instanceof BeamElementUniformEdgeLoad || load.value instanceof BeamConcentratedLoad) {
-    elementNodeValueFx.value = appStore.convertForce(load.value.values[0]).toString();
-    elementNodeValueFz.value = appStore.convertForce(load.value.values[1]).toString();
+    elementNodeValueFx.value = displayElementLoadComponent(load.value.values[0]).toString();
+    elementNodeValueFz.value = appStore
+      .convertForce(
+        eduBeamElementFzToEngineering(
+          load.value.values[1],
+          load.value.lcs
+        )
+      )
+      .toString();
   }
   if (
     load.value instanceof BeamElementUniformEdgeLoad ||
@@ -337,10 +377,24 @@ onMounted(() => {
   }
 
   if (load.value instanceof BeamElementTrapezoidalEdgeLoad) {
-    trapezoidStartFx.value = appStore.convertForce(load.value.startValues[0]).toString();
-    trapezoidStartFz.value = appStore.convertForce(load.value.startValues[1]).toString();
-    trapezoidEndFx.value = appStore.convertForce(load.value.endValues[0]).toString();
-    trapezoidEndFz.value = appStore.convertForce(load.value.endValues[1]).toString();
+    trapezoidStartFx.value = appStore.convertForceDistance(load.value.startValues[0]).toString();
+    trapezoidStartFz.value = appStore
+      .convertForce(
+        eduBeamElementFzToEngineering(
+          load.value.startValues[1],
+          load.value.lcs
+        )
+      )
+      .toString();
+    trapezoidEndFx.value = appStore.convertForceDistance(load.value.endValues[0]).toString();
+    trapezoidEndFz.value = appStore
+      .convertForce(
+        eduBeamElementFzToEngineering(
+          load.value.endValues[1],
+          load.value.lcs
+        )
+      )
+      .toString();
   }
 
   if (load.value instanceof BeamConcentratedLoad) {
@@ -349,8 +403,8 @@ onMounted(() => {
   }
 
   if (load.value instanceof BeamTemperatureLoad) {
-    loadNodeValueTc.value = appStore.convertTemperature(load.value.values[0]).toString();
-    loadNodeValueTbt.value = appStore.convertTemperature(load.value.values[1]).toString();
+    loadNodeValueTc.value = appStore.convertTemperatureDifference(load.value.values[0]).toString();
+    loadNodeValueTbt.value = appStore.convertTemperatureDifference(load.value.values[1]).toString();
   }
 
   //elementNodeValueMy.value = load.values[DofID.Ry];

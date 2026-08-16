@@ -16,9 +16,12 @@
     "lint:fix": "eslint src --ext .ts,.vue --fix",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "ai-server": "node server/index.js",
+    "dev:ai": "concurrently \"npm run ai-server\" \"npm run dev\""
   },
   "dependencies": {
+    "@google/genai": "^2.17.1",
     "@imengyu/vue3-context-menu": "^1.5.2",
     "@intlify/unplugin-vue-i18n": "^11.0.3",
     "@sentry/vite-plugin": "^4.6.1",
@@ -27,6 +30,9 @@
     "@types/js-quantities": "^1.6.6",
     "@vueuse/components": "^14.1.0",
     "@vueuse/core": "^14.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "fast-xml-parser": "^5.3.3",
     "floating-vue": "^5.2.2",
     "jenesius-vue-modal": "^1.11.9",
@@ -61,6 +67,7 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
+    "concurrently": "^10.0.5",
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "^10.6.2",
     "globals": "^16.5.0",

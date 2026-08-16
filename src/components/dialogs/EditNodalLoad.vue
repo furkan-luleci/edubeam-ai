@@ -98,6 +98,12 @@ import { useAppStore } from '@/store/app';
 import { checkNumber, parseFloat2 } from '@/utils';
 import Vector2DHelper from '../Vector2DHelper.vue';
 import { numberRules } from '../../utils';
+import {
+  engineeringFzToEduBeam,
+  eduBeamFzToEngineering,
+  engineeringZToEduBeam,
+  eduBeamZToEngineering
+} from '@/utils/engineeringCoordinates';
 
 const projectStore = useProjectStore();
 const appStore = useAppStore();
@@ -130,10 +136,18 @@ const realFx = computed(() => {
 
 const realFz = computed(() => {
   if (loadType.value === 'force') {
-    return appStore.convertInverseForce(parseFloat2(loadNodeValueFz.value));
+    return engineeringFzToEduBeam(
+      appStore.convertInverseForce(
+        parseFloat2(loadNodeValueFz.value)
+      )
+    );
   }
 
-  return appStore.convertInverseLength(parseFloat2(loadNodeValueFz.value));
+  return engineeringZToEduBeam(
+    appStore.convertInverseLength(
+      parseFloat2(loadNodeValueFz.value)
+    )
+  );
 });
 
 const realMy = computed(() => {
@@ -158,12 +172,24 @@ onMounted(() => {
   if (props.type === 'displacement') {
     const load = useProjectStore().solver.loadCases[0].prescribedBC[props.index];
     loadNodeValueFx.value = appStore.convertLength(load.prescribedValues[DofID.Dx]).toString();
-    loadNodeValueFz.value = appStore.convertLength(load.prescribedValues[DofID.Dz]).toString();
+    loadNodeValueFz.value = appStore
+      .convertLength(
+        eduBeamZToEngineering(
+          load.prescribedValues[DofID.Dz]
+        )
+      )
+      .toString();
     loadNodeValueMy.value = appStore.convertLength(load.prescribedValues[DofID.Ry]).toString();
   } else {
     const load = useProjectStore().solver.loadCases[0].nodalLoadList[props.index];
     loadNodeValueFx.value = appStore.convertForce(load.values[DofID.Dx]).toString();
-    loadNodeValueFz.value = appStore.convertForce(load.values[DofID.Dz]).toString();
+    loadNodeValueFz.value = appStore
+      .convertForce(
+        eduBeamFzToEngineering(
+          load.values[DofID.Dz]
+        )
+      )
+      .toString();
     loadNodeValueMy.value = appStore.convertMoment(load.values[DofID.Ry]).toString();
   }
 });

@@ -126,10 +126,52 @@ export const useAppStore = defineStore(
     const convertInversePressure = (value: number) => _convertInversePressure(value);
     const convertForce = (value: number) => _convertForce(value);
     const convertInverseForce = (value: number) => _convertInverseForce(value);
+
+    /**
+     * Convert internal N/m to the currently selected Force/Length unit.
+     * Example: N/m -> kip/ft.
+     */
+    const convertForceDistance = (value: number) => {
+      const forceValue = customForceConversion('N', units.Force)(value);
+      const displayLengthInMeters = Qty.swiftConverter(units.Length, 'm')(1);
+
+      return forceValue * displayLengthInMeters;
+    };
+
+    /**
+     * Convert the selected Force/Length unit back to internal N/m.
+     * Example: kip/ft -> N/m.
+     */
+    const convertInverseForceDistance = (value: number) => {
+      const forceInNewtons = customForceConversion(units.Force, 'N')(value);
+      const displayLengthInMeters = Qty.swiftConverter(units.Length, 'm')(1);
+
+      return forceInNewtons / displayLengthInMeters;
+    };
     const convertMoment = (value: number) => _convertMoment(value);
     const convertInverseMoment = (value: number) => _convertInverseMoment(value);
     const convertTemperature = (value: number) => _convertTemperature(value);
     const convertInverseTemperature = (value: number) => _convertInverseTemperature(value);
+
+    const convertTemperatureDifference = (
+      value: number
+    ) => {
+      if (units.Temperature === 'F') {
+        return value * 9 / 5;
+      }
+
+      return value;
+    };
+
+    const convertInverseTemperatureDifference = (
+      value: number
+    ) => {
+      if (units.Temperature === 'F') {
+        return value * 5 / 9;
+      }
+
+      return value;
+    };
 
     const onboardingFinished = ref(false);
     const lastSeenChangelogVersion = ref('');
@@ -224,10 +266,14 @@ export const useAppStore = defineStore(
       convertInversePressure,
       convertForce,
       convertInverseForce,
+      convertForceDistance,
+      convertInverseForceDistance,
       convertMoment,
       convertInverseMoment,
       convertTemperature,
       convertInverseTemperature,
+      convertTemperatureDifference,
+      convertInverseTemperatureDifference,
 
       lastSeenChangelogVersion,
     };

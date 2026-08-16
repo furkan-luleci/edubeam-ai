@@ -32,6 +32,11 @@ import { formatExpValueAsHTML } from '../SVGUtils';
 import { executeModelMutationWithUndo, loadType, throttle } from '../utils';
 import { createDimensionId, ensureDimensionId } from '@/utils/id';
 import {
+  eduBeamZToEngineering,
+  eduBeamFzToEngineering,
+  eduBeamElementFzToEngineering
+} from '@/utils/engineeringCoordinates';
+import {
   Node,
   DofID,
   Beam2D,
@@ -477,21 +482,32 @@ const onElementLoadHover = (e: MouseEvent, el: BeamElementLoad) => {
     }
   } else if (el instanceof BeamElementTrapezoidalEdgeLoad) {
     if (Math.abs(el.startValues[0]) > 1e-32 || Math.abs(el.endValues[0]) > 1e-32) {
-      tooltipContent.innerHTML += `${ff}<sub>x</sub> = ${appStore.convertForce(el.startValues[0])} → ${appStore.convertForce(
+      tooltipContent.innerHTML += `${ff}<sub>x</sub> = ${appStore.convertForceDistance(el.startValues[0])} → ${appStore.convertForce(
         el.endValues[0]
       )} ${uu}<br>`;
     }
 
     if (Math.abs(el.startValues[1]) > 1e-32 || Math.abs(el.endValues[1]) > 1e-32) {
-      tooltipContent.innerHTML += `${ff}<sub>z</sub> = ${appStore.convertForce(el.startValues[1])} → ${appStore.convertForce(
+      tooltipContent.innerHTML += `${ff}<sub>z</sub> = ${appStore.convertForce(
+        eduBeamElementFzToEngineering(
+          el.startValues[1],
+          el.lcs
+        )
+      )} → ${appStore.convertForce(
         el.endValues[1]
       )} ${uu}`;
     }
-  } else if (el instanceof BeamElementUniformEdgeLoad || el instanceof BeamConcentratedLoad) {
+  } else if (el instanceof BeamElementUniformEdgeLoad) {
+    if (Math.abs(el.values[0]) > 1e-32) {
+      tooltipContent.innerHTML += `${ff}<sub>x</sub> = ${appStore.convertForceDistance(el.values[0])} ${uu}<br>`;
+    }
+    if (Math.abs(el.values[1]) > 1e-32) {
+      tooltipContent.innerHTML += `${ff}<sub>z</sub> = ${appStore.convertForceDistance(el.values[1])} ${uu}`;
+    }
+  } else if (el instanceof BeamConcentratedLoad) {
     if (Math.abs(el.values[0]) > 1e-32) {
       tooltipContent.innerHTML += `${ff}<sub>x</sub> = ${appStore.convertForce(el.values[0])} ${uu}<br>`;
     }
-
     if (Math.abs(el.values[1]) > 1e-32) {
       tooltipContent.innerHTML += `${ff}<sub>z</sub> = ${appStore.convertForce(el.values[1])} ${uu}`;
     }
@@ -520,7 +536,11 @@ const onNodalLoadHover = (e: MouseEvent, el: NodalLoad) => {
   }
 
   if (Math.abs(el.values[2]) > 1e-32) {
-    tooltipContent.innerHTML += `F<sub>z</sub> = ${appStore.convertForce(el.values[2])} ${appStore.units.Force}<br>`;
+    tooltipContent.innerHTML += `F<sub>z</sub> = ${appStore.convertForce(
+        eduBeamFzToEngineering(
+          el.values[2]
+        )
+      )} ${appStore.units.Force}<br>`;
   }
 
   if (Math.abs(el.values[4]) > 1e-32) {
@@ -550,7 +570,11 @@ const onPrescribedBCHover = (e: MouseEvent, el: PrescribedDisplacement) => {
   }
 
   if (Math.abs(el.prescribedValues[2]) > 1e-32) {
-    tooltipContent.innerHTML += `D<sub>z</sub> = ${appStore.convertLength(el.prescribedValues[2])} ${appStore.units.Length}<br>`;
+    tooltipContent.innerHTML += `D<sub>z</sub> = ${appStore.convertLength(
+        eduBeamZToEngineering(
+          el.prescribedValues[2]
+        )
+      )} ${appStore.units.Length}<br>`;
   }
 
   if (Math.abs(el.prescribedValues[4]) > 1e-32) {
@@ -578,8 +602,14 @@ const buildNodeTooltipContent = (node: Node) => {
     )} m`;
     content += '<br>';
     content += `u<sub>z</sub> = ${formatExpValueAsHTML(
-      // @ts-expect-error It return value for single Dof
-      node.getUnknowns(projectStore.solver.loadCases[0], [DofID.Dz]),
+      eduBeamZToEngineering(
+        Number(
+          node.getUnknowns(
+            projectStore.solver.loadCases[0],
+            [DofID.Dz]
+          )
+        )
+      ),
       4
     )} m`;
     content += '<br>';
@@ -2026,7 +2056,7 @@ defineExpose({ centerContent, fitContent });
                   :data-element-load-id="index"
                   :eload="eload"
                   :scale="scale"
-                  :convert-force="appStore.convertForce"
+                  :convert-force="appStore.convertForceDistance"
                   :font-size="viewerStore.fontSize"
                   :number-format="appStore.numberFormatter"
                   @mousemove="onElementLoadHover($event, eload)"
